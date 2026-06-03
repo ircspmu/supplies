@@ -19,7 +19,7 @@ const CONFIG = {
     {
       id: "1bgrTrT02tFdoBlIstFLv_t21lhc5w0UC",
       sheet: "Inventory Monitoring",
-      name: "Instructioinal Supplies",
+      name: "Instructional Supplies",
       color: "#8b5cf6",
       columns: {
         code: 0,
