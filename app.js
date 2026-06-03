@@ -43,57 +43,21 @@ async function fetchSheetData(sheetConfig) {
   const json = JSON.parse(text.substring(47, text.length - 2));
   const rows = json.table.rows;
   const c = sheetConfig.columns;
+  const colLabels = json.table.cols;
 
-  return rows
+  const fLabel = colLabels[c.inStock]?.label ?? "In Stock";
+  const gLabel = colLabels[c.lowStock]?.label ?? "Low Stock";
+  const hLabel = colLabels[c.outOfStock]?.label ?? "Out of Stock";
+
+  const items = rows
     .filter((row) => row.c[c.inStock] || row.c[c.lowStock] || row.c[c.outOfStock])
     .map((row) => ({
       inStock: displayValue(row.c[c.inStock]?.v),
       lowStock: displayValue(row.c[c.lowStock]?.v),
       outOfStock: displayValue(row.c[c.outOfStock]?.v),
     }));
-}
 
-function renderSheet(sheetIndex, items, colors) {
-  const sheet = CONFIG.sheets[sheetIndex];
-  const container = document.getElementById("sheets-container");
-  const labels = ["In Stock", "Low Stock", "Out of Stock"];
-
-  const defaultColors = ["#22c55e", "#eab308", "#ef4444"];
-  const headerStyle = (i) => {
-    if (colors && colors[i]) return `background:${colors[i]};color:#fff;`;
-    return `background:${defaultColors[i]};color:#fff;`;
-  };
-
-  const card = document.createElement("div");
-  card.className = "sheet-card";
-  card.innerHTML = `
-    <div class="sheet-header" style="border-left: 4px solid ${sheet.color}">
-      <h2>${sheet.name}</h2>
-      <span class="row-count">${items.length} items</span>
-    </div>
-    <div class="sheet-table-wrapper">
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            ${labels
-              .map((label, i) => `<th style="${headerStyle(i)}">${label}</th>`)
-              .join("")}
-          </tr>
-        </thead>
-        <tbody>
-          ${items
-            .map((item) => `<tr>
-              <td>${escapeHtml(item.inStock)}</td>
-              <td>${escapeHtml(item.lowStock)}</td>
-              <td>${escapeHtml(item.outOfStock)}</td>
-            </tr>`)
-            .join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  container.appendChild(card);
+  return { items, labels: [fLabel, gLabel, hLabel] };
 }
 
 function escapeHtml(str) {
@@ -120,6 +84,84 @@ function updateLastUpdated() {
     new Date().toLocaleString();
 }
 
+function renderTabs(sheetsData) {
+  const tabsContainer = document.getElementById("tabs-container");
+  tabsContainer.innerHTML = "";
+
+  const tabBar = document.createElement("div");
+  tabBar.className = "tab-bar";
+
+  sheetsData.forEach((data, index) => {
+    const tab = document.createElement("button");
+    tab.className = `tab-btn${index === 0 ? " active" : ""}`;
+    tab.style.setProperty("--tab-color", CONFIG.sheets[index].color);
+    tab.textContent = CONFIG.sheets[index].name;
+    tab.dataset.index = index;
+    tab.addEventListener("click", () => switchTab(index, sheetsData));
+    tabBar.appendChild(tab);
+  });
+
+  tabsContainer.appendChild(tabBar);
+}
+
+function switchTab(index, sheetsData) {
+  document.querySelectorAll(".tab-btn").forEach((btn, i) => {
+    btn.classList.toggle("active", i === index);
+  });
+
+  const container = document.getElementById("sheets-container");
+  container.innerHTML = "";
+  renderSheetContent(index, sheetsData[index]);
+}
+
+function renderSheetContent(index, data) {
+  if (!data) {
+    showError(CONFIG.sheets[index]?.name ?? "Unknown", new Error("No data"));
+    return;
+  }
+
+  const { items, labels } = data;
+  const sheet = CONFIG.sheets[index];
+  const container = document.getElementById("sheets-container");
+  const defaultColors = ["#22c55e", "#eab308", "#ef4444"];
+
+  const card = document.createElement("div");
+  card.className = "sheet-card";
+  card.innerHTML = `
+    <div class="sheet-header" style="border-left: 4px solid ${sheet.color}">
+      <h2>${sheet.name}</h2>
+      <span class="row-count">${items.length} items</span>
+    </div>
+    <div class="sheet-table-wrapper">
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            ${labels
+              .map(
+                (label, i) =>
+                  `<th style="background:${defaultColors[i]};color:#fff">${escapeHtml(label)}</th>`
+              )
+              .join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${items
+            .map(
+              (item) => `<tr>
+              <td>${escapeHtml(item.inStock)}</td>
+              <td>${escapeHtml(item.lowStock)}</td>
+              <td>${escapeHtml(item.outOfStock)}</td>
+            </tr>`
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.appendChild(card);
+}
+
 async function loadAllSheets() {
   const container = document.getElementById("sheets-container");
   container.innerHTML = "";
@@ -127,24 +169,27 @@ async function loadAllSheets() {
 
   const results = await Promise.allSettled(
     CONFIG.sheets.map(async (s, i) => {
-      const [headerColors, data] = await Promise.all([
-        fetchHeaderColors(s),
-        fetchSheetData(s),
-      ]);
-      return { i, data, headerColors };
+      const data = await fetchSheetData(s);
+      return { i, data };
     })
   );
 
   document.getElementById("loading").style.display = "none";
 
+  const sheetsData = [];
+  let hasError = false;
+
   results.forEach((result) => {
     if (result.status === "fulfilled") {
-      renderSheet(result.value.i, result.value.data, result.value.headerColors);
+      sheetsData[result.value.i] = result.value.data;
     } else {
-      showError(CONFIG.sheets[result.value?.i]?.name ?? "Unknown", result.reason);
+      sheetsData[result.value?.i] = null;
+      hasError = true;
     }
   });
 
+  renderTabs(sheetsData);
+  switchTab(0, sheetsData);
   updateLastUpdated();
 }
 
