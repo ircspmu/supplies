@@ -1,0 +1,51 @@
+const CONFIG = {
+  apiKey: "YOUR_GOOGLE_SHEETS_API_KEY",
+  sheets: [
+    {
+      id: "1D2H7GXOR-XyV2PNNeBw9qKBmcjYDAgVU",
+      sheet: "Inventory Monitoring",
+      name: "Janitorial Supplies",
+      color: "#3b82f6",
+      columns: {
+        code: 0,
+        item: 1,
+        stock: 2,
+        reorderPoint: 3,
+        inStock: 5,
+        lowStock: 6,
+        outOfStock: 7,
+      },
+    },
+    {
+      id: "1bgrTrT02tFdoBlIstFLv_t21lhc5w0UC",
+      sheet: "Inventory Monitoring",
+      name: "Instructioinal Supplies",
+      color: "#8b5cf6",
+      columns: {
+        code: 0,
+        item: 1,
+        stock: 2,
+        reorderPoint: 3,
+        inStock: 5,
+        lowStock: 6,
+        outOfStock: 7,
+      },
+    },
+    {
+      id: "1cP3zKLZPIV_E0mxGltXW-SWzrZhkiaph",
+      sheet: "Inventory Monitoring",
+      name: "Office Supplies",
+      color: "#10b981",
+      columns: {
+        code: 0,
+        item: 1,
+        stock: 2,
+        reorderPoint: 3,
+        inStock: 5,
+        lowStock: 6,
+        outOfStock: 7,
+      },
+    },
+  ],
+  refreshIntervalMs: 300000,
+};

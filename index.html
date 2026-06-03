@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supply Stock Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+</head>
+<body>
+
+  <header class="app-header">
+    <h1><span>📦</span> Supply Stock Dashboard</h1>
+    <div class="header-controls">
+      <span id="last-updated">-</span>
+      <button id="refresh-btn">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Loading stock data...</p>
+    </div>
+    <div id="sheets-container"></div>
+  </main>
+
+  <footer class="app-footer">
+    Data sourced from Google Sheets &middot; Auto-refreshes every 5 minutes
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
