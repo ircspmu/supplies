@@ -203,10 +203,10 @@ main {
 
 .sheet-table th {
   background: #f8fafc;
-  padding: 0.65rem 1rem;
+  padding: 0.4rem 0.75rem;
   text-align: left;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #64748b;
@@ -215,8 +215,9 @@ main {
 }
 
 .sheet-table td {
-  padding: 0.6rem 1rem;
+  padding: 0.25rem 0.75rem;
   border-bottom: 1px solid #f1f5f9;
+  font-size: 0.85rem;
 }
 
 .sheet-table tbody tr:hover {
