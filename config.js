@@ -2,9 +2,9 @@ const CONFIG = {
   apiKey: "YOUR_GOOGLE_SHEETS_API_KEY",
   sheets: [
     {
-      id: "1-TVQ7YdR90d_7DFZXAKqARLe7KjKMz25",
+      id: "1i7n9FjKJrVDXv3G7KXvULV-fm9RTpSnU",
       sheet: "Inventory Monitoring",
-      name: "Janitorial Supplies",
+      name: "Office Supplies",
       color: "#3b82f6",
       columns: {
         code: 0,
@@ -32,9 +32,9 @@ const CONFIG = {
       },
     },
     {
-      id: "1i7n9FjKJrVDXv3G7KXvULV-fm9RTpSnU",
+      id: "1-TVQ7YdR90d_7DFZXAKqARLe7KjKMz25",
       sheet: "Inventory Monitoring",
-      name: "Office Supplies",
+      name: "Janitorial Supplies",
       color: "#10b981",
       columns: {
         code: 0,
